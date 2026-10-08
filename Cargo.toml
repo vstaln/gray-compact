@@ -1,0 +1,17 @@
+[package]
+name = "gray-compact"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.91"
+license = "MIT"
+description = "Auto-compact oversized context into an LLM summary via host/run. Port of pi's custom-compaction + trigger-compact."
+
+[[bin]]
+name = "gray-compact"
+path = "src/main.rs"
+
+[dependencies]
+serde_json = "1"
+
+[profile.release]
+strip = true
