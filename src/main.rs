@@ -1,6 +1,6 @@
-//! gray-compact — pi's "summarize EVERYTHING" compaction as a gray sidecar.
+//! gray-compact — "summarize everything" auto-compaction as a gray sidecar.
 //!
-//! Port of pi's `custom-compaction.ts` + `trigger-compact.ts`. On every
+//! On every
 //! `context/build` the sidecar serializes the outbound message list; when it
 //! exceeds `GRAY_COMPACT_CHARS` (default 120000) — or a `/compact` pass was
 //! armed — it asks `host/run` (a `gray -p` turn, capability `host.turn`) to
@@ -112,7 +112,7 @@ fn host_run(link: Option<&HostLink>, prompt: &str) -> Result<String, String> {
     Err("host/run: empty reply".into())
 }
 
-// --- conversation serialization (port of pi's serializeConversation) --------
+// --- conversation serialization --------------------------------------------
 
 /// `content` may be a string or gray's `[{type:...}]` block array; returns the
 /// concatenated plain text ("" when absent or no text blocks).
@@ -138,8 +138,8 @@ fn truncate_for_summary(text: &str, max_chars: usize) -> String {
     format!("{kept}\n\n[... {} more characters truncated]", n - max_chars)
 }
 
-/// Serialize `[Message]` values to pi's `[Role]: ...` text form. Blocks are
-/// gray's snake_case tags; the pi camelCase names are accepted too so the
+/// Serialize `[Message]` values to the `[Role]: ...` text form. Blocks are
+/// gray's snake_case tags; camelCase names are accepted too so the
 /// serializer is honest about either serde shape.
 fn serialize_messages(messages: &[Value]) -> String {
     let mut parts: Vec<String> = Vec::new();

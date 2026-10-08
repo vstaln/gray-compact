@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 rust-version = "1.91"
 license = "MIT"
-description = "Auto-compact oversized context into an LLM summary via host/run. Port of pi's custom-compaction + trigger-compact."
+description = "Auto-compact oversized context into an LLM summary via host/run"
 
 [[bin]]
 name = "gray-compact"
