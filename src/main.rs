@@ -44,6 +44,7 @@ fn manifest() -> Value {
         "tools": [],
         "description": "compact oversized context into a summary",
         "commands": ["/compact"],
+        "command_descriptions": {"/compact": "summarize older context to shrink it"},
         "hooks": ["context/build"],
         "capabilities": ["host.turn"],
     })
