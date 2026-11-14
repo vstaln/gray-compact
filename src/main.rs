@@ -42,6 +42,7 @@ fn manifest() -> Value {
         "version": env!("CARGO_PKG_VERSION"),
         "protocol": "2.0",
         "tools": [],
+        "description": "compact",
         "commands": ["/compact"],
         "hooks": ["context/build"],
         "capabilities": ["host.turn"],
