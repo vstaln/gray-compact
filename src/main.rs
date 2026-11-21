@@ -76,10 +76,7 @@ fn host_run(link: Option<&HostLink>, prompt: &str) -> Result<String, String> {
     };
     let id = next_id(&link.counter);
     let (tx, rx) = mpsc::channel();
-    link.pending
-        .lock()
-        .expect("pending")
-        .insert(id.clone(), tx);
+    link.pending.lock().expect("pending").insert(id.clone(), tx);
     let req = json!({"id": id, "method": "host/run", "params": {"prompt": prompt}});
     {
         let mut o = link.out.lock().expect("stdout");
@@ -137,7 +134,10 @@ fn truncate_for_summary(text: &str, max_chars: usize) -> String {
         return text.to_string();
     }
     let kept: String = text.chars().take(max_chars).collect();
-    format!("{kept}\n\n[... {} more characters truncated]", n - max_chars)
+    format!(
+        "{kept}\n\n[... {} more characters truncated]",
+        n - max_chars
+    )
 }
 
 /// Serialize `[Message]` values to the `[Role]: ...` text form. Blocks are
@@ -342,13 +342,13 @@ fn compact_reply(messages: &[Value], sid: &str, link: Option<&HostLink>) -> Opti
 
     let mut cache = load_cache(sid);
     let summary = if cache.get("prefix_hash").and_then(Value::as_str) == Some(hash.as_str()) {
-        cache.get("summary").and_then(Value::as_str).map(str::to_string)
+        cache
+            .get("summary")
+            .and_then(Value::as_str)
+            .map(str::to_string)
     } else {
-        match host_run(link, &summary_prompt(&prefix_text)) {
-            Ok(s) => Some(s),
-            // Fail open: a broken summarizer must never eat a request.
-            Err(_) => None,
-        }
+        // Fail open: a broken summarizer must never eat a request.
+        host_run(link, &summary_prompt(&prefix_text)).ok()
     };
     let Some(summary) = summary else {
         cache["chars"] = json!(total_chars);
@@ -380,7 +380,8 @@ fn run_command(argv: &[&str], sid: &str) -> String {
     match argv.first().copied() {
         Some("off") => {
             let dir = state_dir();
-            match std::fs::create_dir_all(&dir).and_then(|_| std::fs::write(dir.join("disabled"), b""))
+            match std::fs::create_dir_all(&dir)
+                .and_then(|_| std::fs::write(dir.join("disabled"), b""))
             {
                 Ok(()) => "auto-compaction off".into(),
                 Err(e) => format!("couldn't write state: {e}"),
@@ -542,9 +543,12 @@ mod tests {
     use super::*;
 
     fn call(method: &str, params: Value) -> Value {
-        handle(&json!({ "id": 1, "method": method, "params": params }), None)
-            .0
-            .unwrap()
+        handle(
+            &json!({ "id": 1, "method": method, "params": params }),
+            None,
+        )
+        .0
+        .unwrap()
     }
 
     #[test]
